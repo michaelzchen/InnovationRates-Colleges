@@ -24,5 +24,8 @@ innovationRates <- read_csv("1005 final project data/innovationRates.csv")
 
 colleges <- clean_names(colleges, "snake")
 innovationRates <- clean_names(innovationRates, "snake")
+
+test <- colleges[1:100, ]
+test2 <- t(test)
 ```
 
