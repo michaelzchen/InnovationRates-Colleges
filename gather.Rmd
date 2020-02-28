@@ -1,0 +1,28 @@
+---
+title: "Gather"
+author: "Michael Chen"
+date: "2/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(readr)
+library(janitor)
+library(gt)
+library(rvest)
+library(ggplot2)
+library(ggthemes)
+
+colleges <- read_csv("1005 final project data/Most-Recent-Cohorts-All-Data-Elements (1).csv")
+innovationRates <- read_csv("1005 final project data/innovationRates.csv")
+
+colleges <- clean_names(colleges, "snake")
+innovationRates <- clean_names(innovationRates, "snake")
+```
+
