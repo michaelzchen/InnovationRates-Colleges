@@ -26,6 +26,6 @@ colleges <- clean_names(colleges, "snake")
 innovationRates <- clean_names(innovationRates, "snake")
 
 test <- colleges[1:100, ]
-test2 <- t(test)
+test5 <- t(test)
 ```
 
