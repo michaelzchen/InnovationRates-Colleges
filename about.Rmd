@@ -26,3 +26,5 @@ The other dataset I use is from the College Scorecard project - this is designed
 My name is Michael Chen and I'm a current sophomore at Harvard studying Applied Math and Economics with a secondary in Government. As a co-founder of a biotech startup, I'm quite intrigued by the innovation rates at colleges and how to increase this "builder" mentality among our students. My github repo for this project can be accessed at this link: https://github.com/michaelzchen/finalproject.git. 
 
 You can reach me at: chen_michael@college.harvard.edu or on Linkedin: https://www.linkedin.com/in/michael-c-134086135/
+
+*Note that from Milestone 3 to now, I have selected out the 500 or so variables that I'd like to examine across both datasets out of an original 2000. In addition, I have created a new variable from which I was able to merge both datasets together. Now, I can begin creating plots and running regressions.
