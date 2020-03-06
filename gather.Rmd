@@ -19,13 +19,38 @@ library(rvest)
 library(ggplot2)
 library(ggthemes)
 
+# Read in the 2 datasets 
+
 colleges <- read_csv("1005 final project data/Most-Recent-Cohorts-All-Data-Elements (1).csv")
 innovationRates <- read_csv("1005 final project data/innovationRates.csv")
+
+# Clean the 2 datasets 
 
 colleges <- clean_names(colleges, "snake")
 innovationRates <- clean_names(innovationRates, "snake")
 
+# View the colleges dataset in long form, so that you can better see the different variables and select only the ones that matter for this project
+
 test <- colleges[1:100, ]
 test5 <- t(test)
+```
+
+```{r}
+
+# Select out only the variables that we are interested in the colleges dataset. We want to keep all the variables in the innovationRates dataset so don't change anything found there. Store this new data in the newColleges dataset. In addition, because we know we eventually want to join these 2 datasets so we can perform analysis, 
+
+newColleges <- colleges %>% select(-insturl, -accredagency, -hcm2, -main, -starts_with('cip'), -starts_with('c150'), -starts_with('num'), -starts_with('dep'), -starts_with('ind'), -starts_with('female'), -starts_with('male'), -starts_with('loan'), -starts_with('noloan'), -starts_with('firstgen'), -starts_with('not1stgen'), -starts_with('pell'), -starts_with('nopell'), -starts_with('low_inc'), -starts_with('mid_inc'), -starts_with('hi_inc'), -starts_with('npt4'), -contains('rpy'), -starts_with('count'), -starts_with('mn_earn'), -starts_with('d150'), -starts_with('om'), -starts_with('ret'), -starts_with('pool'), -unitid, -opeid) %>% mutate(super_opeid = str_sub(opeid6, 3, -1)) %>% select(super_opeid, everything()) %>% select(-opeid6)
+
+# Need to convert the super_opeid data frame into a numeric column so we can join the 2 together in both datasets.
+
+newColleges$super_opeid <- as.numeric(as.character(newColleges$super_opeid))
+
+# Use an inner join to merge the 2 datasets by super_opeid (the ID variable for each institution) and keep all the columns in both of the datasets.
+
+joined <- inner_join(innovationRates, newColleges, by = "super_opeid")
+
+newJoined <- joined[!duplicated(joined$super_opeid), ]
+final <- newJoined %>% select(-instnm.y)
+
 ```
 
