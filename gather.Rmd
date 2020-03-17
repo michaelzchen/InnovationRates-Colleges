@@ -1,30 +1,34 @@
 ---
 title: "Gather"
 author: "Michael Chen"
-date: "2/24/2020"
+date: "3/16/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-```
 
-```{r}
+# Load libraries
+
 library(tidyverse)
 library(dplyr)
 library(readr)
 library(janitor)
 library(gt)
 library(rvest)
+library(scales)
 library(ggplot2)
 library(ggthemes)
+```
 
-# Read in the 2 datasets 
+```{r downloading, include = FALSE}
+
+# Read in the 2 datasets
 
 colleges <- read_csv("1005 final project data/Most-Recent-Cohorts-All-Data-Elements (1).csv")
 innovationRates <- read_csv("1005 final project data/innovationRates.csv")
 
-# Clean the 2 datasets 
+# Clean the 2 datasets
 
 colleges <- clean_names(colleges, "snake")
 innovationRates <- clean_names(innovationRates, "snake")
@@ -35,11 +39,19 @@ test <- colleges[1:100, ]
 test5 <- t(test)
 ```
 
-```{r}
+```{r cleaning, include = FALSE}
 
-# Select out only the variables that we are interested in the colleges dataset. We want to keep all the variables in the innovationRates dataset so don't change anything found there. Store this new data in the newColleges dataset. In addition, because we know we eventually want to join these 2 datasets so we can perform analysis, 
+# Select out only the variables that we are interested in the colleges dataset.
+# We want to keep all the variables in the innovationRates dataset so don't
+# change anything found there. Store this new data in the newColleges dataset.
+# In addition, because we know we eventually want to join these 2 datasets so we
+# can perform analysis,
 
-newColleges <- colleges %>% select(-insturl, -accredagency, -hcm2, -main, -starts_with('cip'), -starts_with('c150'), -starts_with('num'), -starts_with('dep'), -starts_with('ind'), -starts_with('female'), -starts_with('male'), -starts_with('loan'), -starts_with('noloan'), -starts_with('firstgen'), -starts_with('not1stgen'), -starts_with('pell'), -starts_with('nopell'), -starts_with('low_inc'), -starts_with('mid_inc'), -starts_with('hi_inc'), -starts_with('npt4'), -contains('rpy'), -starts_with('count'), -starts_with('mn_earn'), -starts_with('d150'), -starts_with('om'), -starts_with('ret'), -starts_with('pool'), -unitid, -opeid) %>% mutate(super_opeid = str_sub(opeid6, 3, -1)) %>% select(super_opeid, everything()) %>% select(-opeid6)
+newColleges <- colleges %>%
+  select(-insturl, -accredagency, -hcm2, -main, -starts_with("cip"), -starts_with("c150"), -starts_with("num"), -starts_with("dep"), -starts_with("ind"), -starts_with("female"), -starts_with("male"), -starts_with("loan"), -starts_with("noloan"), -starts_with("firstgen"), -starts_with("not1stgen"), -starts_with("pell"), -starts_with("nopell"), -starts_with("low_inc"), -starts_with("mid_inc"), -starts_with("hi_inc"), -starts_with("npt4"), -contains("rpy"), -starts_with("count"), -starts_with("mn_earn"), -starts_with("d150"), -starts_with("om"), -starts_with("ret"), -starts_with("pool"), -unitid, -opeid) %>%
+  mutate(super_opeid = str_sub(opeid6, 3, -1)) %>%
+  select(super_opeid, everything()) %>%
+  select(-opeid6)
 
 # Need to convert the super_opeid data frame into a numeric column so we can join the 2 together in both datasets.
 
@@ -49,8 +61,18 @@ newColleges$super_opeid <- as.numeric(as.character(newColleges$super_opeid))
 
 joined <- inner_join(innovationRates, newColleges, by = "super_opeid")
 
+# Remove the duplicates (if the super_opeid is the same, delete)
+
 newJoined <- joined[!duplicated(joined$super_opeid), ]
 final <- newJoined %>% select(-instnm.y)
-
 ```
 
+```{r ggplot, warning = FALSE}
+
+# Now that I have the tibble I am interested in (called final), I can now create several plots.
+
+ggplot(final, aes(x = as.numeric(adm_rate), inventor, color = inventor)) +
+  geom_point(size = 1.5, show.legend = FALSE) +
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) + scale_x_continuous(labels = scales::percent) + theme_classic()
+```
