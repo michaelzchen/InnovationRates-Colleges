@@ -76,3 +76,7 @@ ggplot(final, aes(x = as.numeric(adm_rate), inventor, color = inventor)) +
   labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") +
   scale_y_continuous(labels = scales::percent) + scale_x_continuous(labels = scales::percent) + theme_classic()
 ```
+
+```{r}
+ggsave("v1/Reg_Adm_Rates_Inventors.png")
+```
