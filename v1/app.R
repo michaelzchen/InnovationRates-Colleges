@@ -16,7 +16,7 @@ ui <- navbarPage(theme = shinytheme("superhero"),
                  "Innovation Rates and College Characteristics",
                  tabPanel("Mapping Characteristics",
                           # Application title
-                          titlePanel("Map of United States"),
+                          titlePanel("Heat Map of Different College Characteristics"),
                           
                           # Show a plot of the generated distribution
                           mainPanel(
@@ -25,35 +25,52 @@ ui <- navbarPage(theme = shinytheme("superhero"),
                  ),
                  tabPanel("Linear Relationships",
                           fluidPage(
-                              titlePanel("Model Title"),
+                              titlePanel("Correlations"),
                               sidebarLayout(
                                   sidebarPanel(
                                       selectInput(
                                           "plot_type",
-                                          "Plot Type",
-                                          c("Option A" = "a", "Option B" = "b")
+                                          "College Characteristic",
+                                          c("Admissions Rate" = "a", "Average SAT Score" = "b", 
+                                            "Size of Class" = "c", "Average Total Cost of Attendance" = "d",
+                                            "Average Faculty Salary" = "e")
                                       )),
                                   mainPanel(plotOutput("line_plot")))
                           )),
-                 tabPanel("Regression",
+                 tabPanel("Regression and Prediction",
                           h1("Selectiveness and Inventiveness"),
                           fixedRow(
                               column(4,
-                                     p("I examined a ")),
+                                     p("The regression on the right shows that, quite intuitively,
+                                       the less selective a college is (marked by an increase in admissions
+                                       rate), the fewer share of inventors it has among its undergraduate population.
+                                       However, there could be many confounding factors that could influence
+                                       the results of this analysis.")),
                               column(5, 
                                      plotOutput("plot1", height = "100%"))
                           ),
                           br(),
-                          h1("Regression"),
+                          h1("Faculty Salary and Inventiveness"),
                           fixedRow(
                               column(4,
-                                     p("The graphic shows the regression of three sets of data: the violent crime
-                            data from San Francisco, the violent crime data from Oakland, and the number of gun
-                            control laws in California. The violent crime data is the same that is shown in the
-                            first grpahic and the data on gun control laws is from "),
+                                     p("The regression on the right shows that quite clearly, as faculty salary
+                                       increases, the share of inventors increases as well - this is also quite intuitive.
+                                       Like before, however, we aren't sure if there are confounding factors that could
+                                       have affected this relationship.")),
                               column(5, 
-                                     plotOutput("plot2", height = "100%")))
-                 )),
+                                     plotOutput("plot2", height = "100%"))
+                          ),
+                          br(),
+                          h1("Different SAT Subjects"),
+                          fixedRow(
+                              column(4,
+                                     p("This maps (in 3 colors), different SAT midpoint scores in reading, writing, and math.
+                                       The goal was to identify whether there was a difference in strength in subject area on 
+                                       inventors. As is quite evident in the graph, there is too much noise for us to make any
+                                       conclusive judgments.")),
+                              column(5, 
+                                     plotOutput("plot4", height = "100%"))
+                          )),
                  tabPanel("Discussion",
                           h2("Modeling"),
                           p("For my graphics, I chose to include several types: one showing trends between inventor
@@ -149,7 +166,7 @@ server <- function(input, output) {
     
     output$plot2 <- renderImage({
         # When input$n is 3, filename is ./images/image3.jpeg
-        filename <- normalizePath(file.path('Reg_Adm_Rates_Inventors.png'))
+        filename <- normalizePath(file.path('Reg_AvgFacSal_Inventors.png'))
         
         # Return a list containing the filename and alt text
         list(src = filename, width = 700, length = 800)
@@ -159,6 +176,15 @@ server <- function(input, output) {
     output$plot3 <- renderImage({
         # When input$n is 3, filename is ./images/image3.jpeg
         filename <- normalizePath(file.path('MapsOriginal.png'))
+        
+        # Return a list containing the filename and alt text
+        list(src = filename, width = 700, length = 800)
+        
+    }, deleteFile = FALSE)
+    
+    output$plot4 <- renderImage({
+        # When input$n is 3, filename is ./images/image3.jpeg
+        filename <- normalizePath(file.path('Reg_SatAvgDiffSubj_Inventors.png'))
         
         # Return a list containing the filename and alt text
         list(src = filename, width = 700, length = 800)
