@@ -70,7 +70,7 @@ final <- newJoined %>% select(-instnm.y)
 
 ```{r ggplot, warning = FALSE}
 
-# Now that I have the tibble I am interested in (called final), I can now create several plots.
+# Now that I have the tibble I am interested in (called final), I can now create several plots. The first is a regression of admissions rate for each college against the inventors rate.
 
 ggplot(final, aes(x = as.numeric(adm_rate), inventor, color = inventor)) +
   geom_point(size = 1.5, show.legend = FALSE) +
@@ -85,22 +85,26 @@ ggsave("v1/Reg_Adm_Rates_Inventors.png")
 
 ```{r relationalPlots, warning = FALSE}
 
-# Now that I have the tibble I am interested in (called final), I can now create several plots.
+# I can now create several more plots 
 
-ggplot(final, aes(x = as.numeric(count_pq1), y = inventor, color = inventor_pq1)) +
+ggplot(final, aes(x = as.numeric(count_pq1), y = inventor, color = inventor)) +
   geom_jitter() +
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") +
+  labs(title = "Regression of Number of Students with \n Parents in the First Income Quntile Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") +
   scale_y_continuous(labels = scales::percent) +
   theme_classic()
 
+ggsave("v1/Reg_CountPQ1_Inventors.png")
+
 # Overall SAT average
 
-ggplot(final, aes(x = as.numeric(sat_avg), y = inventor)) +
+ggplot(final, aes(x = as.numeric(sat_avg), y = inventor, color = inventor)) +
   geom_jitter() +
   labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "SAT Average Score", y = "Percentage of Students That Are Inventors") +
   scale_y_continuous(labels = scales::percent) +
   geom_smooth(method = "lm", se = TRUE) +
   theme_classic()
+
+ggsave("v1/Reg_CountPQ1_Inventors.png")
 
 # Comparing SAT midpoint scores in critical reading, writing, and math, to see which has the greatest effect on inventor rate
 
