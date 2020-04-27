@@ -20,6 +20,7 @@ library(scales)
 library(ggplot2)
 library(ggthemes)
 library(urbnmapr)
+library(broom)
 library(ggmap)
 library(gganimate)
 ```
@@ -73,9 +74,12 @@ final <- newJoined %>% select(-instnm.y)
 
 ggplot(final, aes(x = as.numeric(adm_rate), inventor, color = inventor)) +
   geom_point(size = 1.5, show.legend = FALSE) +
-  labs(title = "Correlation of Admissions Rate for Each College Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") +
-  scale_y_continuous(labels = scales::percent) + scale_x_continuous(labels = scales::percent) + geom_smooth(method = "lm", se = TRUE) + theme_classic()
-  
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(labels = scales::percent) +
+  geom_smooth(method = "lm", se = TRUE) +
+  theme_classic()
+
 ggsave("v1/Reg_Adm_Rates_Inventors.png")
 ```
 
@@ -85,31 +89,48 @@ ggsave("v1/Reg_Adm_Rates_Inventors.png")
 
 ggplot(final, aes(x = as.numeric(count_pq1), y = inventor, color = inventor_pq1)) +
   geom_jitter() +
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") + scale_y_continuous(labels = scales::percent) + theme_classic()
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic()
 
 # Overall SAT average
 
 ggplot(final, aes(x = as.numeric(sat_avg), y = inventor)) +
   geom_jitter() +
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "SAT Average Score", y = "Percentage of Students That Are Inventors") + scale_y_continuous(labels = scales::percent) + geom_smooth(method = "lm", se = TRUE)  + theme_classic()
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "SAT Average Score", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_smooth(method = "lm", se = TRUE) +
+  theme_classic()
 
 # Comparing SAT midpoint scores in critical reading, writing, and math, to see which has the greatest effect on inventor rate
 
 ggplot(final) +
-  geom_line(aes(x = as.numeric(satvrmid), y = inventor), color = 'blue') + geom_line(aes(x = as.numeric(satmtmid), y = inventor), color = 'red', linetype = 'dotted') + geom_line(aes(x = as.numeric(satwrmid), y = inventor), color = 'green') + 
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "SAT Average Score", y = "Percentage of Students That Are Inventors in Student Body") + scale_y_continuous(labels = scales::percent) + theme_classic()
+  geom_line(aes(x = as.numeric(satvrmid), y = inventor), color = "blue") +
+  geom_line(aes(x = as.numeric(satmtmid), y = inventor), color = "red", linetype = "dotted") +
+  geom_line(aes(x = as.numeric(satwrmid), y = inventor), color = "green") +
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "SAT Average Score", y = "Percentage of Students That Are Inventors in Student Body") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic()
 
 # Comparing ACT midpoint scores in reading, writing, and math, to see if standardized tests have any prediction on inventor rate
 
 ggplot(final) +
-  geom_line(aes(x = as.numeric(actenmid), y = inventor), color = 'blue') + geom_line(aes(x = as.numeric(actmtmid), y = inventor), color = 'red', linetype = 'dotted') + geom_line(aes(x = as.numeric(actwrmid), y = inventor), color = 'green') + 
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "ACT Average Score", y = "Percentage of Students That Are Inventors in Student Body") + scale_color_manual(c("red", "blue", "green")) + scale_y_continuous(labels = scales::percent) + theme_classic()
+  geom_line(aes(x = as.numeric(actenmid), y = inventor), color = "blue") +
+  geom_line(aes(x = as.numeric(actmtmid), y = inventor), color = "red", linetype = "dotted") +
+  geom_line(aes(x = as.numeric(actwrmid), y = inventor), color = "green") +
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "ACT Average Score", y = "Percentage of Students That Are Inventors in Student Body") +
+  scale_color_manual(c("red", "blue", "green")) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_classic()
 
 # Comparing size of class
 
 ggplot(final, aes(x = as.numeric(ugds), y = inventor)) +
   geom_jitter() +
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Undergraduate Student Population Size", y = "Percentage of Students That Are Inventors") + scale_y_continuous(labels = scales::percent) + geom_smooth(method = "lm", se = TRUE)  + theme_classic()
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Undergraduate Student Population Size", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_smooth(method = "lm", se = TRUE) +
+  theme_classic()
 ```
 
 ```{r, warning = FALSE}
@@ -117,24 +138,29 @@ ggplot(final, aes(x = as.numeric(ugds), y = inventor)) +
 
 ggplot(final, aes(x = as.numeric(costt4_a), y = inventor)) +
   geom_jitter() +
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Undergraduate Student Population Size", y = "Percentage of Students That Are Inventors") + scale_y_continuous(labels = scales::percent) + geom_smooth(method = "lm", se = TRUE)  + theme_classic()
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Undergraduate Student Population Size", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_smooth(method = "lm", se = TRUE) +
+  theme_classic()
 
 # Average faculty salary
 
 ggplot(final, aes(x = as.numeric(avgfacsal), y = inventor)) +
   geom_jitter() +
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Undergraduate Student Population Size", y = "Percentage of Students That Are Inventors") + scale_y_continuous(labels = scales::percent) + geom_smooth(method = "lm", se = FALSE)  + theme_classic()
+  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Undergraduate Student Population Size", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_classic()
 
-# Proportionl of faculty that is 
+# Proportionl of faculty that is
 
 # Comparing tuition fees (both in state and out)
-
 ```
 
 ```{r creatingMaps}
 final <- final %>% rename("state_fips" = "st_fips")
-counties$state_fips = as.numeric(as.character(counties$state_fips))
-map_data <- left_join(final, counties, by = "state_fips") 
+counties$state_fips <- as.numeric(as.character(counties$state_fips))
+map_data <- left_join(final, counties, by = "state_fips")
 ```
 
 ```{r, warning = FALSE}
@@ -147,33 +173,12 @@ ggsave("v1/MapsOriginal.png")
 ```
 
 ```{r Create linear models}
-final1 <- final %>% 
-  select(inventor, sat_avg, super_opeid)
+final1 <- final %>%
+  select(inventor, avgfacsal, super_opeid) %>%
+  filter(avgfacsal != "NULL")
 
-lm <- final %>%
-  group_by(super_opeid) %>%
-  nest() %>%
-  mutate(mod = map(data, ~ lm(inventor ~ as.numeric(sat_avg), data = .))) %>%
-  mutate(reg_results = map(mod, ~ tidy(.))) %>%
-  mutate(coef = map_dbl(reg_results, ~ filter(., term == "avgfascal") %>% pull(estimate))) %>%
-  mutate(se = map_dbl(reg_results, ~ filter(., term == "avgfascal") %>% pull(std.error))) %>%
-  mutate(upper = coef + (1.96 * se), lower = coef - (1.96 * se))
-
-linearModel %>% ggplot() +
-  geom_point(mapping = aes(x = super_opeid, y = coef), color = "blue") +
-  geom_errorbar(aes(x = super_opeid, ymin = lower, ymax = upper), color = "red") +
-  labs(
-    x = "Congress",
-    y = "Estimate",
-    title = "Average Treatment Effect of Age on Conservatism \n Among Democrats Over Time", subtitle = "Scores use DW Nominate Dimension 1 \n 95% Confidence Interval"
-  ) +
-  theme_classic()
+linearModel <- final1 %>%
+  lm(inventor ~ avgfacsal, data = .) %>%
+  tidy(conf.int = TRUE) %>%
+  select(term, estimate, conf.low, conf.high)
 ```
-
-
-
-
-
-
-
-
