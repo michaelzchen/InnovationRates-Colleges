@@ -9,4 +9,4 @@ Innovation rates by college come from Opportunity Insights and college character
 # Repo Guide
 + /Inventors-College : Shiny App
 + /1005 final project data : Importing CSV and Data Documentation PDFs
-+ about.rmd : code used to run linear models and create graphics
++ about.Rmd : code used to run linear models and create graphics
