@@ -9,35 +9,57 @@
 
 library(shiny)
 library(shinythemes)
+library(readr)
+library(janitor)
+library(tidyverse)
+library(stringr)
+library(gt)
+library(moderndive)
+library(broom)
+library(htmltools)
+library(vembedr)
+library(shiny)
+
+# Read in the data and remove all data that can't be plotted on the x axis
+
+collegePatents <- read_csv("collegePatents.csv") %>% rename("Average SAT Score" = "sat_avg", "Undergraduate Size" = "ugds",
+                             "Average Faculty Salary" = "avgfacsal", "Median Number of Students in Debt" = "debt_n",
+                             "Average Age of Entry" = "age_entry",
+                             "Tuition Costs" = "tuitionfee_prog",
+                             "Median Household Income" = "median_hh_inc")
 
 # Define UI for application that draws a histogram
 
 ui <- navbarPage(theme = shinytheme("superhero"),
                  "Innovation Rates and College Characteristics",
-                 tabPanel("Mapping Characteristics",
-                          # Application title
-                          titlePanel("Heat Map of Different College Characteristics"),
-                          
-                          # Show a plot of the generated distribution
-                          mainPanel(
-                              plotOutput("plot3")
-                          ),
-                 ),
                  tabPanel("Linear Relationships",
                           fluidPage(
                               titlePanel("Correlations"),
                               sidebarLayout(
                                   sidebarPanel(
+                                      h2("Correlations Against Share of Inventors"),
+                                      column(10, 
+                                             p("We can now run linear regressions and see the relationships
+                                          between various important college characteristics and the share of 
+                                          inventors in the undergrad population, as measured by patent data obtained from Opportunity
+                                          Insights.")),
                                       selectInput(
-                                          "plot_type",
+                                          "variable",
                                           "College Characteristic",
-                                          c("Admissions Rate" = "a", "Average SAT Score" = "b", 
-                                            "Size of Class" = "c", "Average Total Cost of Attendance" = "d",
-                                            "Average Faculty Salary" = "e")
+                                          choices = c("Average SAT Score" = "Average SAT Score",
+                                               "Undergraduate Size" = "Undergraduate Size",
+                                               "Average Faculty Salary" = "Average Faculty Salary",
+                                               "Median Number of Students in Debt" = "Median Number of Students in Debt",
+                                               "Average Age of Entry" = "Average Age of Entry",
+                                               "Tuition Costs" = "Tuition Costs",
+                                               "Median Household Income" = "Median Household Income")
                                       )),
-                                  mainPanel(plotOutput("line_plot")))
-                          )),
-                 tabPanel("Regression and Prediction",
+                                  mainPanel(plotOutput("inventorschart"),
+                         column(4, align = "center")
+                          ),
+                         
+                         ))),
+                 tabPanel("A Closer Look/Modeling",
                           h1("Selectiveness and Inventiveness"),
                           fixedRow(
                               column(4,
@@ -47,10 +69,12 @@ ui <- navbarPage(theme = shinytheme("superhero"),
                                        However, there could be many confounding factors that could influence
                                        the results of this analysis.")),
                               column(5, 
-                                     plotOutput("plot1", height = "100%"))
+                                     plotOutput("plot1", height = "100%"),
+                                     tableOutput("model_table_1"),
+                                     tableOutput("model_table_1_2"))
                           ),
                           br(),
-                          h1("Faculty Salary and Inventiveness"),
+                          h1("Share of 1st Gen Students and Inventiveness"),
                           fixedRow(
                               column(4,
                                      p("The regression on the right shows that quite clearly, as faculty salary
@@ -58,10 +82,12 @@ ui <- navbarPage(theme = shinytheme("superhero"),
                                        Like before, however, we aren't sure if there are confounding factors that could
                                        have affected this relationship.")),
                               column(5, 
-                                     plotOutput("plot2", height = "100%"))
+                                     plotOutput("plot2", height = "100%"),
+                                     tableOutput("model_table_2"),
+                                     tableOutput("model_table_2_2"))
                           ),
                           br(),
-                          h1("Different SAT Subjects"),
+                          h1("Percent of Full-Time Faculty and Inventiveness"),
                           fixedRow(
                               column(4,
                                      p("This maps (in 3 colors), different SAT midpoint scores in reading, writing, and math.
@@ -69,24 +95,11 @@ ui <- navbarPage(theme = shinytheme("superhero"),
                                        inventors. As is quite evident in the graph, there is too much noise for us to make any
                                        conclusive judgments.")),
                               column(5, 
-                                     plotOutput("plot4", height = "100%"))
-                          )),
+                                     plotOutput("plot3", height = "100%"),
+                                     tableOutput("model_table_3"),
+                                     tableOutput("model_table_3_2")))
+                          ),
                  tabPanel("Discussion",
-                          h2("Modeling"),
-                          p("For my graphics, I chose to include several types: one showing trends between inventor
-                 rates and various college characteristics (there is a dropdown menu in the Modeling panel 
-                 that allows someone to choose which characteristic they want to examine - example characteristics
-                 for people to choose from include admission rates, average faculty salary, undergraduate
-                 population size, average SAT score, and many more), one showing the regression of admissions
-                 rates and inventor/patent rates, and one that shows datapoints of colleges around the US 
-                 that are covered in my dataset"),
-                          h2("Map of Colleges"),
-                          p("In these graphics, I display a map of the US, with different regions highlighted (filled) depending
-                   on various characteristics - for example, total patents, inventor rates, etc. The goal is so
-                   that prospective students can see various college characteristics by region. As expected, areas 
-                   near Silicon Valley and Boston are higher than the average in terms of total patents and 
-                   inventor rates, but the maps also depict several surprising results as well in terms of what
-                   regions are hotspots for inventiveness."),
                           h2("Relationships between College Characteristics and Patent Rates"),
                           p("These graphics depict any linear relatinoships (if applicable) between different college characteristics
                    and patent rates, as calculated by Opportunity Insights. An individual is defined as an inventor if he or 
@@ -94,6 +107,14 @@ ui <- navbarPage(theme = shinytheme("superhero"),
                    (see Section II.B of the paper - “Mobility Report Cards: The Role of Colleges in Intergenerational Mobility. 
                    The vast majority of characteristics seem to not really have any statistially significant correlations with
                    the share of inventors per college, although some characterisics do display rather counter-intuitive results."),
+                          h2("A Closer Look/Modeling"),
+                          p("For my graphics, I chose to include several types: one showing trends between inventor
+                 rates and various college characteristics (there is a dropdown menu in the Modeling panel 
+                 that allows someone to choose which characteristic they want to examine - example characteristics
+                 for people to choose from include admission rates, average faculty salary, undergraduate
+                 population size, average SAT score, and many more), one showing the regression of admissions
+                 rates and inventor/patent rates, and one that shows datapoints of colleges around the US 
+                 that are covered in my dataset"),
                           h2("Regression"),
                           p("Given the above, I now seek to actually test if there are causal relationships (using linear models and 
                  logistic regressions) between specific college characteristics that I hypothesize could actually affect the
@@ -164,32 +185,98 @@ server <- function(input, output) {
         
     }, deleteFile = FALSE)
     
+    model_1 <- lm(inventor ~ adm_rate, data = collegePatents)
+    model_table_1 <- get_regression_table(model_1)
+    model_1_glance <- as.data.frame(glance(model_1))
+
+    # render the linear regression table
+    
+    output$model_table_1 <- renderTable(model_table_1)
+    
+    # render the r^2 table
+    
+    output$model_table_1_2 <- renderTable(model_1_glance)
+    
     output$plot2 <- renderImage({
         # When input$n is 3, filename is ./images/image3.jpeg
-        filename <- normalizePath(file.path('Reg_AvgFacSal_Inventors.png'))
+        filename <- normalizePath(file.path('Reg_1st_Gen_Inventors.png'))
         
         # Return a list containing the filename and alt text
         list(src = filename, width = 700, length = 800)
         
     }, deleteFile = FALSE)
+    
+    model_2 <- lm(inventor ~ first_gen, data = collegePatents)
+    model_table_2 <- get_regression_table(model_2)
+    model_2_glance <- as.data.frame(glance(model_2))
+    
+    # render the linear regression table
+    
+    output$model_table_2 <- renderTable(model_table_2)
+    
+    # render the r^2 table
+    
+    output$model_table_2_2 <- renderTable(model_2_glance)
     
     output$plot3 <- renderImage({
         # When input$n is 3, filename is ./images/image3.jpeg
-        filename <- normalizePath(file.path('MapsOriginal.png'))
+        filename <- normalizePath(file.path('Reg_Perc_Faculty_Inventors.png'))
         
         # Return a list containing the filename and alt text
         list(src = filename, width = 700, length = 800)
         
     }, deleteFile = FALSE)
     
-    output$plot4 <- renderImage({
-        # When input$n is 3, filename is ./images/image3.jpeg
-        filename <- normalizePath(file.path('Reg_SatAvgDiffSubj_Inventors.png'))
+    # create regression table for the 3rd graph
+    
+    model_3 <- lm(inventor ~ pftfac, data = collegePatents)
+    model_table_3 <- get_regression_table(model_3)
+    model_3_glance <- as.data.frame(glance(model_3))
+    
+    # render the linear regression table
+    
+    output$model_table_3 <- renderTable(model_table_3)
+    
+    # render the r^2 table
+    
+    output$model_table_3_2 <- renderTable(model_3_glance)
+    
+    output$inventorschart <- renderPlot({
+
+        # create the graph
+        graph <- ggplot(collegePatents, aes(x = input$variable, y = inventor)) +
+            geom_jitter(color = "blue") +
+            labs(title = paste0("Relationship Between ", input$variable, " and Percent of Inventors"), x = input$variable, y = "Percentage of Students That Are Inventors") +
+            scale_y_continuous(labels = scales::percent) + 
+            geom_smooth(method = "lm", se = TRUE, color = "black") +
+            theme_classic()
         
-        # Return a list containing the filename and alt text
-        list(src = filename, width = 700, length = 800)
+        print(graph)
+    })
+    
+    output$patentschart <- renderPlot({
         
-    }, deleteFile = FALSE)
+        # create the graph
+        graph1 <- ggplot(collegePatents, aes(x = input$variable1, y = total_patents)) +
+            geom_jitter() +
+            labs(title = paste0("Relationship Between ", input$variable1, " and Total Patents"), x = input$variable1, y = "Total Patents") + 
+            geom_smooth(method = "lm", se = TRUE) +
+            theme_classic()
+        
+        print(graph1)
+    })
+    
+    output$citeschart <- renderPlot({
+        
+        # create the graph
+        graph2 <- ggplot(collegePatents, aes(x = input$variable2, y = total_cites)) +
+            geom_jitter() +
+            labs(title = paste0("Relationship Between ", input$variable2, " and Total Citations"), x = input$variable2, y = "Total Citations") + 
+            geom_smooth(method = "lm", se = TRUE) +
+            theme_classic()
+        
+        print(graph2)
+    })
 }
 
 # Run the application 

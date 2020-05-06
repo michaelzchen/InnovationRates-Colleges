@@ -75,130 +75,33 @@ final <- newJoined %>% select(-instnm.y)
 final$adm_rate <- as.numeric(as.character(final$adm_rate))
 
 ggplot(final, aes(x = adm_rate, inventor, color = inventor)) +
-  geom_point(size = 1.5, show.legend = FALSE) +
-  labs(title = "Regression of Admissions Rate for Each College Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors") +
+  geom_jitter() +
+  geom_smooth(method = "loess", se = TRUE) +
+  labs(title = "Regression of Admissions Rate Against Inventors", x = "Admissions Rate", y = "Percentage of Students That Are Inventors", caption = "Data Source: Opportunity Insights and College Scorecard Project") +
   scale_y_continuous(labels = scales::percent) +
-  scale_x_continuous(labels = scales::percent) +
-  geom_smooth(method = "lm", se = TRUE) +
-  theme_classic()
+  scale_x_continuous(labels = scales::percent)
 
-ggsave("v1/Reg_Adm_Rates_Inventors.png")
+ggsave("Inventors-College/Reg_Adm_Rates_Inventors.png")
 ```
 
-```{r relationalPlots, warning = FALSE}
-
-# I can now create several more plots 
-
-ggplot(final, aes(x = as.numeric(count_pq1), y = inventor, color = inventor)) +
+```{r}
+ggplot(final, aes(x = as.numeric(first_gen), inventor, color = inventor)) +
   geom_jitter() +
-  labs(title = "Regression of Number of Students with \n Parents in the First Income Quntile Against Inventors", x = "Number of Students", y = "Percentage of Students That Are Inventors") +
-  scale_y_continuous(labels = scales::percent) + geom_smooth(method = "lm", se = TRUE) + 
-  theme_classic()
-
-ggsave("v1/Reg_CountPQ1_Inventors.png")
-
-# Overall SAT average
-
-ggplot(final, aes(x = as.numeric(sat_avg), y = inventor, color = inventor)) +
-  geom_jitter() +
-  labs(title = "Regression of SAT Average Score for Each College Against Inventors", x = "SAT Average Score", y = "Percentage of Students That Are Inventors") +
+  geom_smooth(method = "loess", se = TRUE) +
+  labs(title = "Regression of Percent of 1st Gen Students Against Inventors", x = "Share of 1st Gen", y = "Percentage of Students That Are Inventors", caption = "Data Source: Opportunity Insights and College Scorecard Project") +
   scale_y_continuous(labels = scales::percent) +
-  geom_smooth(method = "lm", se = TRUE) +
-  theme_classic()
+  scale_x_continuous(labels = scales::percent)
 
-ggsave("v1/Reg_SatAvg_Inventors.png")
-
-# Comparing SAT midpoint scores in critical reading, writing, and math, to see which has the greatest effect on inventor rate
-
-ggplot(final) +
-  geom_line(aes(x = as.numeric(satvrmid), y = inventor), color = "blue") +
-  geom_line(aes(x = as.numeric(satmtmid), y = inventor), color = "red", linetype = "dotted") +
-  geom_line(aes(x = as.numeric(satwrmid), y = inventor), color = "green") +
-  labs(title = "Relationship between SAT Midpoint Scores in Various Subject \n for Each College Against Inventors", x = "SAT Midpoint Score", y = "Percentage of Students That Are Inventors in Student Body") +
-  scale_y_continuous(labels = scales::percent) +
-  theme_classic()
-
-ggsave("v1/Reg_SatAvgDiffSubj_Inventors.png")
-
-# Comparing ACT midpoint scores in reading, writing, and math, to see if standardized tests have any prediction on inventor rate
-
-ggplot(final) +
-  geom_line(aes(x = as.numeric(actenmid), y = inventor), color = "blue") +
-  geom_line(aes(x = as.numeric(actmtmid), y = inventor), color = "red", linetype = "dotted") +
-  geom_line(aes(x = as.numeric(actwrmid), y = inventor), color = "green") +
-  labs(title = "Regression of ACT midpoint Scores in Various Subjects \n for Each College Against Inventors", x = "ACT Midpoint Score", y = "Percentage of Students That Are Inventors in Student Body") +
-  scale_color_manual(c("red", "blue", "green")) +
-  scale_y_continuous(labels = scales::percent) +
-  theme_classic()
-
-ggsave("v1/Reg_ACTAvgDiffSubj_Inventors.png")
-
-# Comparing size of class
-
-ggplot(final, aes(x = as.numeric(ugds), y = inventor, color = inventor)) +
-  geom_jitter() +
-  labs(title = "Regression of Class Size for Each College Against Inventors", x = "Undergraduate Student Population Size", y = "Percentage of Students That Are Inventors") +
-  scale_y_continuous(labels = scales::percent) +
-  geom_smooth(method = "lm", se = TRUE) +
-  theme_classic()
-
-ggsave("v1/Reg_UGDS_Inventors.png")
+ggsave("Inventors-College/Reg_1st_Gen_Inventors.png")
 ```
 
-```{r, warning = FALSE}
-# Comparing average cost of attendance
-
-ggplot(final, aes(x = as.numeric(costt4_a), y = inventor, color = inventor)) +
+```{r}
+ggplot(final, aes(x = as.numeric(pftfac), inventor, color = inventor)) +
   geom_jitter() +
-  labs(title = "Regression of Average Cost of Attendance for Each College Against Inventors", x = "Average Cost", y = "Percentage of Students That Are Inventors") +
+  geom_smooth(method = "loess", se = TRUE) +
+  labs(title = "Regression of Percent of Full Time Faculty Against Inventors", x = "Percent of Full Time Faculty", y = "Percentage of Students That Are Inventors", caption = "Data Source: Opportunity Insights and College Scorecard Project") +
   scale_y_continuous(labels = scales::percent) +
-  geom_smooth(method = "lm", se = TRUE) +
-  theme_classic()
+  scale_x_continuous(labels = scales::percent)
 
-ggsave("v1/Reg_Cost_Inventors.png")
-
-# Average faculty salary
-
-ggplot(final, aes(x = as.numeric(avgfacsal), y = inventor, color = inventor)) +
-  geom_jitter() +
-  labs(title = "Regression of Average Faculty Salary for Each College Against Inventors", x = "Average Faculty Salary", y = "Percentage of Students That Are Inventors") +
-  scale_y_continuous(labels = scales::percent) +
-  geom_smooth(method = "lm", se = TRUE) +
-  theme_classic()
-
-ggsave("v1/Reg_AvgFacSal_Inventors.png")
-```
-
-```{r creatingMaps}
-
-# Combine the current dataset with information contained within the counties dataset.
-
-final <- final %>% rename("state_fips" = "st_fips")
-counties$state_fips <- as.numeric(as.character(counties$state_fips))
-map_data <- left_join(final, counties, by = "state_fips")
-```
-
-```{r, warning = FALSE}
-
-# Use the combined dataset to create a heat map of the US, that can now be filled in/colored by different characteristics.
-map_data %>%
-  ggplot(aes(long, lat, group = group)) +
-  geom_polygon(color = NA) +
-  coord_map(projection = "albers", lat0 = 39, lat1 = 45)
-
-ggsave("v1/MapsOriginal.png")
-```
-
-```{r Create linear models}
-
-# Begin by creating a linear model regression  between average faculty salary and the share of inventors. 
-
-final1 <- final %>%
-  select(inventor, avgfacsal, super_opeid) %>%
-  filter(avgfacsal != "NULL")
-
-linearModel <- final1 %>%
-  lm(inventor ~ avgfacsal, data = .) %>%
-  tidy(conf.int = TRUE) %>%
-  select(term, estimate, conf.low, conf.high)
+ggsave("Inventors-College/Reg_Perc_Faculty_Inventors.png")
 ```
