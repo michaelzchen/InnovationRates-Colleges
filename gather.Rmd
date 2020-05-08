@@ -94,7 +94,7 @@ ggplot(final, aes(x = adm_rate, inventor, color = inventor)) +
 
 # Save the plot
 
-ggsave("Inventors-College/Reg_Adm_Rates_Inventors.png")
+ggsave("InnovationRates-CollegesFinal/Reg_Adm_Rates_Inventors.png")
 ```
 
 ```{r ggplot1, warning = FALSE}
@@ -112,7 +112,7 @@ ggplot(final, aes(x = as.numeric(first_gen), inventor, color = inventor)) +
 
 # Save image
 
-ggsave("Inventors-College/Reg_1st_Gen_Inventors.png")
+ggsave("InnovationRates-CollegesFinal/Reg_1st_Gen_Inventors.png")
 ```
 
 ```{r ggplot2, warning = FALSE}
@@ -130,7 +130,7 @@ ggplot(final, aes(x = as.numeric(pftfac), inventor, color = inventor)) +
 
 # Save image
 
-ggsave("Inventors-College/Reg_Perc_Faculty_Inventors.png")
+ggsave("InnovationRates-CollegesFinal/Reg_Perc_Faculty_Inventors.png")
 ```
 
 ```{r race/ethnicity, warning = FALSE}
@@ -151,7 +151,7 @@ ggplot(final) +
 
 # Save image
 
-ggsave("Inventors-College/Races.png")
+ggsave("InnovationRates-CollegesFinal/Races.png")
 
 # Plot different relationships (as segmented by gender) on the same graph, to
 # compare any similarities or differences
@@ -167,7 +167,7 @@ ggplot(final) +
 
 # Save image
 
-ggsave("Inventors-College/Gender.png")
+ggsave("InnovationRates-CollegesFinal/Gender.png")
 
 # Plot different relationships (as segmented by SAT subject) on the same graph,
 # to compare any similarities or differences
@@ -183,7 +183,7 @@ ggplot(final) +
 
 # Save image
 
-ggsave("Inventors-College/SATScores.png")
+ggsave("InnovationRates-CollegesFinal/SATScores.png")
 
 # Plot different relationships (as segmented by ACT subject) on the same graph,
 # to compare any similarities or differences
@@ -199,5 +199,5 @@ ggplot(final) +
 
 # Save image
 
-ggsave("Inventors-College/ACTScores.png")
+ggsave("InnovationRates-CollegesFinal/ACTScores.png")
 ```
