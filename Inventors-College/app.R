@@ -197,7 +197,7 @@ ui <- navbarPage(
                                      students show significantly less aptitude than others in inventiveness. Like before, 
                                      however, we aren't sure if there are confounding factors that could
                                      have affected this relationship. For example, we see a positive relationship
-          once more once the share of 1st Gen students is greater than 60%, but there are few data points to go off of. The linear model
+          once the share of 1st Gen students is greater than 60%, but there are few data points to go off of. The linear model
           displayed in the table below shows a very slightly negative relationship between share of 1st Gen students and share of inventors.")
       ),
       column(
@@ -243,9 +243,9 @@ ui <- navbarPage(
         p("A key question students (and colleges) often debate is the value of attending a diverse institution, with people
           from all different races and backgrounds. Furthermore, with the controversy of affirmative action
           and the historic inequity between different races, it is worthwhile to break down the amount of inventiveness
-          displayed by different races - whites, hispanics, asians, and blacks. As we can see on the graph at the right,
+          displayed by different races - Whites, Hispanics, Asians, and Blacks. As we can see on the graph at the right,
           the Asian population shows an incredibly strong positive relationship between increasing numbers and share of students
-          in that college who become inventors. The other 3 demographics seem to all show the exact opposite relationship, with increasing percent demographics all leading
+          in that college who become inventors. However, the Asian percent demographic stops at 50%, unlike the other 3 - a curious result. The other 3 demographics seem to all show the exact opposite relationship, with increasing percent demographics all leading
           to ultimately 0 percent of students that become inventors. There could be many explanations for these trends, such as
           different access to resources among the different races, or a lack of data points.")
       ),
@@ -299,7 +299,7 @@ ui <- navbarPage(
           Intuitively, one would think that the math line (outlined in black) would 
           show a stronger positive relationship than the other 2, because inventors are often in the
           STEM fields. In fact, in contrast to the SAT graph above, we do see that black, particularly after a score of 30 (out of 36),
-          really shows a much stronger positive relationship to share of inventors than the other 2 areas do.")
+          really shows a much stronger positive relationship with share of inventors than the other 2 areas do.")
       ),
       column(
         5,
@@ -324,12 +324,12 @@ ui <- navbarPage(
                    is the most common barometer of success. However, having read Andrew Yang's
                    book 'Smart People Should Build Things', my main concern with the 'outcome'
                    of college is whether people are creating something of value - I define value
-                   as higher innovation rates (which is measured through number of patents registered).
+                   as higher innovation rates/higher percentage of the student body becoing inventors (Chetty defines an individual as an inventor if he or she is listed on a patent application between 2001 and 2012 or grant between 1996 and 2014).
                    Throughout the project, I will run regressions on various data for innovation 
-                   rates (total number of patents granted to sstudents, share of inventors among 
+                   rates (total number of patents granted to students, share of inventors among 
                    students, total number of patent citations obtained by students, etc.) and 
                    various college characteristics (percentage of high income students, average 
-                   SAT/ACT score, percentage of degrees awarded in various fields)."),
+                   SAT/ACT score, median family income)."),
     h3("Dataset 1 Used"),
     p(
       "The first data source comes from Raj Chetty's Opportunity Insights data, which harnesses 
@@ -538,7 +538,7 @@ server <- function(input, output) {
   # Loop through the potential user choices and create the appropriate
   # scatterplot, substituting in the user input for the x variable
 
-   output$citeschart <- renderPlot({
+  output$citeschart <- renderPlot({
 
     # create the graph
     ggplot(collegePatents %>% drop_na(input$variable), aes(x = get(input$variable2), y = total_cites)) +
