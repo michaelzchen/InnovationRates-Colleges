@@ -7,6 +7,8 @@ This project will be a data analaysis on what college characteristics result in 
 Innovation rates by college come from Opportunity Insights and college characteristics come from the College Scorecard Project.
 
 # Repo Guide
-+ /InnovationRates-CollegesFinal : Shiny App
++ /InnovationRates-CollegesFinal : Final Shiny App and Creation of Linear Models
 + /1005 final project data : Importing CSV and Data Documentation PDFs
-+ about.Rmd : code used to run linear models and create graphics
++ about.Rmd : code used to clean data and create stand-alone graphics
++ /v1: First draft
++ /Inventors-College: Second Draft
