@@ -36,8 +36,6 @@ innovationRates <- read_csv("1005 final project data/innovationRates.csv")
 
 colleges <- clean_names(colleges, "snake")
 innovationRates <- clean_names(innovationRates, "snake")
-
-# View the colleges dataset in long form, so that you can better see the different variables and select only the ones that matter for this project
 ```
 
 ```{r cleaning, include = FALSE}
@@ -46,7 +44,8 @@ innovationRates <- clean_names(innovationRates, "snake")
 # We want to keep all the variables in the innovationRates dataset so don't
 # change anything found there. Store this new data in the newColleges dataset.
 # In addition, because we know we eventually want to join these 2 datasets so we
-# can perform analysis,
+# can perform analysis, we need to ensure that the joining variable is the same
+# type and same name in both datasets.
 
 newColleges <- colleges %>%
   select(-insturl, -accredagency, -hcm2, -main, -starts_with("cip"), -starts_with("c150"), -starts_with("num"), -starts_with("dep"), -starts_with("ind"), -starts_with("female"), -starts_with("male"), -starts_with("loan"), -starts_with("noloan"), -starts_with("firstgen"), -starts_with("not1stgen"), -starts_with("pell"), -starts_with("nopell"), -starts_with("low_inc"), -starts_with("mid_inc"), -starts_with("hi_inc"), -starts_with("npt4"), -contains("rpy"), -starts_with("count"), -starts_with("mn_earn"), -starts_with("d150"), -starts_with("om"), -starts_with("ret"), -starts_with("pool"), -unitid, -opeid) %>%
@@ -54,11 +53,13 @@ newColleges <- colleges %>%
   select(super_opeid, everything()) %>%
   select(-opeid6)
 
-# Need to convert the super_opeid data frame into a numeric column so we can join the 2 together in both datasets.
+# Need to convert the super_opeid data frame into a numeric column so we can
+# join the 2 together in both datasets.
 
 newColleges$super_opeid <- as.numeric(as.character(newColleges$super_opeid))
 
-# Use an inner join to merge the 2 datasets by super_opeid (the ID variable for each institution) and keep all the columns in both of the datasets.
+# Use an inner join to merge the 2 datasets by super_opeid (the ID variable for
+# each institution) and keep all the columns in both of the datasets.
 
 joined <- inner_join(innovationRates, newColleges, by = "super_opeid")
 
@@ -66,13 +67,23 @@ joined <- inner_join(innovationRates, newColleges, by = "super_opeid")
 
 newJoined <- joined[!duplicated(joined$super_opeid), ]
 final <- newJoined %>% select(-instnm.y)
+
+# After creating final dataset, exported it as CSV and saved in
+# Inventors-College folder via console
 ```
 
 ```{r ggplot, warning = FALSE}
 
-# Now that I have the tibble I am interested in (called final), I can now create several plots. The first is a regression of admissions rate for each college against the inventors rate.
+# Now that I have the tibble I am interested in (called final), I can now create
+# several plots. The first is a regression of admissions rate for each college
+# against the inventors rate. Need to change adm_rate to a numeric variable to
+# graph it properly. Warning = False to get rid of geom_smooth notifications
+# about removing NAs in data.
 
 final$adm_rate <- as.numeric(as.character(final$adm_rate))
+
+# Use ggplot to graph the scatterplot, with geom_smooth to chart the
+# relationship between the 2 points
 
 ggplot(final, aes(x = adm_rate, inventor, color = inventor)) +
   geom_jitter() +
@@ -81,10 +92,17 @@ ggplot(final, aes(x = adm_rate, inventor, color = inventor)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(labels = scales::percent)
 
+# Save the plot
+
 ggsave("Inventors-College/Reg_Adm_Rates_Inventors.png")
 ```
 
-```{r}
+```{r ggplot1, warning = FALSE}
+
+# Need to graph the relationship between first gen and inventor, to include in
+# Shiny. Warning = False to get rid of geom_smooth notifications about removing
+# NAs in data.
+
 ggplot(final, aes(x = as.numeric(first_gen), inventor, color = inventor)) +
   geom_jitter() +
   geom_smooth(method = "loess", se = TRUE) +
@@ -92,10 +110,17 @@ ggplot(final, aes(x = as.numeric(first_gen), inventor, color = inventor)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(labels = scales::percent)
 
+# Save image
+
 ggsave("Inventors-College/Reg_1st_Gen_Inventors.png")
 ```
 
-```{r}
+```{r ggplot2, warning = FALSE}
+
+# Graphing the relationship between percent of full time faculty and inventor,
+# to include as a static PNG in Shiny. Warning = False to get rid of geom_smooth
+# notifications about removing NAs in data.
+
 ggplot(final, aes(x = as.numeric(pftfac), inventor, color = inventor)) +
   geom_jitter() +
   geom_smooth(method = "loess", se = TRUE) +
@@ -103,10 +128,16 @@ ggplot(final, aes(x = as.numeric(pftfac), inventor, color = inventor)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(labels = scales::percent)
 
+# Save image
+
 ggsave("Inventors-College/Reg_Perc_Faculty_Inventors.png")
 ```
 
-```{r race/ethnicity}
+```{r race/ethnicity, warning = FALSE}
+
+# Plot different relationships (as segmented by races) on the same graph, to
+# compare any similarities or differences
+
 cols <- c("White" = "Blue", "Asian" = "Red", "Hispanic" = "Green", "Black" = "Black")
 ggplot(final) +
   geom_smooth(data = final, aes(x = as.numeric(ugds_white), y = inventor, color = "White"), fill = "Blue") +
@@ -118,7 +149,12 @@ ggplot(final) +
   scale_x_continuous(labels = scales::percent) +
   scale_color_manual(name = "Race", values = cols)
 
+# Save image
+
 ggsave("Inventors-College/Races.png")
+
+# Plot different relationships (as segmented by gender) on the same graph, to
+# compare any similarities or differences
 
 cols1 <- c("Men" = "Blue", "Women" = "Red")
 ggplot(final) +
@@ -129,7 +165,12 @@ ggplot(final) +
   scale_x_continuous(labels = scales::percent) +
   scale_color_manual(name = "Gender", values = cols1)
 
+# Save image
+
 ggsave("Inventors-College/Gender.png")
+
+# Plot different relationships (as segmented by SAT subject) on the same graph,
+# to compare any similarities or differences
 
 cols2 <- c("Verbal" = "Blue", "Math" = "Red", "Writing" = "Black")
 ggplot(final) +
@@ -140,7 +181,12 @@ ggplot(final) +
   scale_y_continuous(labels = scales::percent) +
   scale_color_manual(name = "SAT Subject", values = cols2)
 
+# Save image
+
 ggsave("Inventors-College/SATScores.png")
+
+# Plot different relationships (as segmented by ACT subject) on the same graph,
+# to compare any similarities or differences
 
 cols3 <- c("Cumulative" = "Blue", "English" = "Red", "Math" = "Black")
 ggplot(final) +
@@ -151,9 +197,7 @@ ggplot(final) +
   scale_y_continuous(labels = scales::percent) +
   scale_color_manual(name = "ACT Subject", values = cols3)
 
+# Save image
+
 ggsave("Inventors-College/ACTScores.png")
-```
-
-```{r}
-
 ```

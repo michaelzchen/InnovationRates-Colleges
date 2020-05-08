@@ -7,6 +7,8 @@
 #    http://shiny.rstudio.com/
 #
 
+# Install the necessary libraries
+
 library(shiny)
 library(shinythemes)
 library(readr)
@@ -20,7 +22,8 @@ library(htmltools)
 library(vembedr)
 library(shiny)
 
-# Read in the data and remove all data that can't be plotted on the x axis
+# Read in the data and ensure that all data that can be selected will be of the
+# numeric type. Rename variables to align with user selection options on the UI.
 
 collegePatents <- read_csv("collegePatents.csv", na = c("NULL"), col_types = cols(
   sat_avg = col_integer(), avgfacsal = col_integer(), debt_n = col_integer(),
@@ -35,11 +38,18 @@ collegePatents <- read_csv("collegePatents.csv", na = c("NULL"), col_types = col
   "Median Family Income" = "md_faminc"
 )
 
-# Define UI for application that draws a histogram
+# Define UI for the project and the various tab panels
 
 ui <- navbarPage(
+
+  # Use superhero shinytheme to brighten up the UI
   theme = shinytheme("superhero"),
   "Innovation Rates and College Characteristics",
+
+  # Create tab panel that allows for user input and compare different linear
+  # relationships between key college characteristics and different proxies for
+  # inventiveness. Includes 3 graphs, with 8 user options for each graph.
+
   tabPanel(
     "Linear Relationships",
     fluidPage(
@@ -57,6 +67,9 @@ ui <- navbarPage(
                                           inventors in the undergrad population, as measured by patent data obtained from Opportunity
                                           Insights.")
           ),
+
+          # Allow for user input
+
           selectInput(
             "variable",
             "College Characteristic",
@@ -141,6 +154,11 @@ ui <- navbarPage(
       )
     )
   ),
+
+  # This tab is where I conduct user linear modeling techniques on 3 different
+  # relationships (results displayed in a table) and graph the relationships as
+  # well.
+
   tabPanel(
     "A Closer Look/Modeling",
     h1("Selectiveness and Inventiveness"),
@@ -154,11 +172,15 @@ ui <- navbarPage(
                                        the results of this analysis. Additionally, it is important to note that this
                                        graph could also demonstrate a counterintuitive result - one could have the
                                        perspective that more selective colleges lead to students who are less
-                                       willing to fail, and thus less inventiveness. The linear model demonstrated
-                                       in the table shows")
+                                       willing to fail, and thus less inventiveness. The linear model displayed
+                                       in the table shows that there is a very slight negative relationship
+                                       between admissions rate and share of inventors.")
       ),
       column(
         5,
+
+        # Plot scatterplot and output regression table
+
         plotOutput("plot1", height = "100%"),
         tableOutput("model_table_1"),
         tableOutput("model_table_1_2")
@@ -171,10 +193,12 @@ ui <- navbarPage(
         4,
         p("The regression on the right shows that as the share of first gen students
                                      increases, the share of inventors slightly decreases, although the relationship
-                                     is almost 0. This is quite intuitive, as there are no studies showing that 1st Gen 
+                                     is almost 0, especially around 40% - 50%. This is quite intuitive, as there are no studies showing that 1st Gen 
                                      students show significantly less aptitude than others in inventiveness. Like before, 
                                      however, we aren't sure if there are confounding factors that could
-                                       have affected this relationship.")
+                                     have affected this relationship. For example, we see a positive relationship
+          once more once the share of 1st Gen students is greater than 60%, but there are few data points to go off of. The linear model
+          displayed in the table below shows a very slightly negative relationship between share of 1st Gen students and share of inventors.")
       ),
       column(
         5,
@@ -188,10 +212,12 @@ ui <- navbarPage(
     fixedRow(
       column(
         4,
-        p("This maps (in 3 colors), different SAT midpoint scores in reading, writing, and math.
-                                       The goal was to identify whether there was a difference in strength in subject area on 
-                                       inventors. As is quite evident in the graph, there is too much noise for us to make any
-                                       conclusive judgments.")
+        p("The regression on the right shows that as the percent of full time faculty increases, there is
+          a very slight positive increase in the percentage of students that are inventors. However, as
+          in the previous cases, the relationship is not strong at all and in fact, hovers around
+          0. The linear model displayed in the table confirms what we see visually, which is a slightly positive
+          relationship, with a slope of 0.02. As in previous cases, the r squared value is quite low, showing that
+          our regression line does not fit the data that well.")
       ),
       column(
         5,
@@ -201,17 +227,27 @@ ui <- navbarPage(
       )
     )
   ),
+
+  # This panel provides a detailed breakdown of the relationship between
+  # different races, different genders, and different test score subject areas
+  # on the share of inventors. Contains 4 plots that have multiple geom_smooth()
+  # lines for ease of comparison between different races, different genders,
+  # etc.
+
   tabPanel(
     "Race, Gender, and Tests Scores",
     h1("Does Race Affect Innovation Rates?"),
     fixedRow(
       column(
         4,
-        p("The regression on the right shows that, quite intuitively,
-                                       the less selective a college is (marked by an increase in admissions
-                                       rate), the fewer share of inventors it has among its undergraduate population.
-                                       However, there could be many confounding factors that could influence
-                                       the results of this analysis.")
+        p("A key question students (and colleges) often debate is the value of attending a diverse institution, with people
+          from all different races and backgrounds. Furthermore, with the controversy of affirmative action
+          and the historic inequity between different races, it is worthwhile to break down the amount of inventiveness
+          displayed by different races - whites, hispanics, asians, and blacks. As we can see on the graph at the right,
+          the Asian population shows an incredibly strong positive relationship between increasing numbers and share of students
+          in that college who become inventors. The other 3 demographics seem to all show the exact opposite relationship, with increasing percent demographics all leading
+          to ultimately 0 percent of students that become inventors. There could be many explanations for these trends, such as
+          different access to resources among the different races, or a lack of data points.")
       ),
       column(
         5,
@@ -223,10 +259,11 @@ ui <- navbarPage(
     fixedRow(
       column(
         4,
-        p("The regression on the right shows that quite clearly, as faculty salary
-                                       increases, the share of inventors increases as well - this is also quite intuitive.
-                                       Like before, however, we aren't sure if there are confounding factors that could
-                                       have affected this relationship.")
+        p("Another oft talked about issue about colleges is the distinction between all-male and all-female institutions,
+          and what the correct balance between the 2 genders is in a college. This graph on the right seems to indicate that, quite
+          counterintuitively, the optimal balance of genders in an institution with regards to inventiveness is 25% female and 75% male, as indicated
+          by the maximums at those respective percentages. We can also see quite clearly that all male
+          and all female institutions fare quite poorly in terms of inventiveness. A 50/50 balance seems to be the inflection point.")
       ),
       column(
         5,
@@ -238,10 +275,14 @@ ui <- navbarPage(
     fixedRow(
       column(
         4,
-        p("This maps (in 3 colors), different SAT midpoint scores in reading, writing, and math.
-                                       The goal was to identify whether there was a difference in strength in subject area on 
-                                       inventors. As is quite evident in the graph, there is too much noise for us to make any
-                                       conclusive judgments.")
+        p("Standardized test scores are another huge area of debate among college admissions and prospective
+          students. One large camp believes that test scores are a poor indication of a person's aptitude and ability to succeed,
+          while the other camp believes that a certain base level of intelligence is required, and standardized scores
+          best capture that level in the fairest way. In the graph to the right, I compare SAT scores in different subject
+          areas, including verbal, math, and writing. Intuitively, one would think that the math line (outlined in black) would 
+          show a stronger positive relationship than the other 2, because inventors are often in the
+          STEM fields. However, we can see here that all 3 lines basically overlap each other, indicating
+          that colleges where students score anything 700 and above (out of 800) leads to a sharp increase in the number of inventors in that college.")
       ),
       column(
         5,
@@ -253,10 +294,12 @@ ui <- navbarPage(
     fixedRow(
       column(
         4,
-        p("This maps (in 3 colors), different SAT midpoint scores in reading, writing, and math.
-                                       The goal was to identify whether there was a difference in strength in subject area on 
-                                       inventors. As is quite evident in the graph, there is too much noise for us to make any
-                                       conclusive judgments.")
+        p("As mentioned previously, standardized test scores are a huge area of debate among college admissions and prospective
+          students. In the graph to the right, I compare ACT scores in different subject areas, including English, Math, and Cumulative. 
+          Intuitively, one would think that the math line (outlined in black) would 
+          show a stronger positive relationship than the other 2, because inventors are often in the
+          STEM fields. In fact, in contrast to the SAT graph above, we do see that black, particularly after a score of 30 (out of 36),
+          really shows a much stronger positive relationship to share of inventors than the other 2 areas do.")
       ),
       column(
         5,
@@ -264,31 +307,10 @@ ui <- navbarPage(
       )
     )
   ),
-  tabPanel(
-    "Discussion",
-    h2("Relationships between College Characteristics and Patent Rates"),
-    p("These graphics depict any linear relatinoships (if applicable) between different college characteristics
-                   and patent rates, as calculated by Opportunity Insights. An individual is defined as an inventor if he or 
-                   she is listed on a patent application between 2001 and 2012 or grant between 1996 and 2014 
-                   (see Section II.B of the paper - “Mobility Report Cards: The Role of Colleges in Intergenerational Mobility. 
-                   The vast majority of characteristics seem to not really have any statistially significant correlations with
-                   the share of inventors per college, although some characterisics do display rather counter-intuitive results."),
-    h2("A Closer Look/Modeling"),
-    p("For my graphics, I chose to include several types: one showing trends between inventor
-                 rates and various college characteristics (there is a dropdown menu in the Modeling panel 
-                 that allows someone to choose which characteristic they want to examine - example characteristics
-                 for people to choose from include admission rates, average faculty salary, undergraduate
-                 population size, average SAT score, and many more), one showing the regression of admissions
-                 rates and inventor/patent rates, and one that shows datapoints of colleges around the US 
-                 that are covered in my dataset"),
-    h2("Regression"),
-    p("Given the above, I now seek to actually test if there are causal relationships (using linear models and 
-                 logistic regressions) between specific college characteristics that I hypothesize could actually affect the
-                   share of inventors that come out of a college. These results will give colleges insight into what
-                   areas they should focus research on to improve the innovation and desire to build within their students."),
-    h2("Conclusion"),
-    p("Discussion of Final Results")
-  ),
+
+  # Text only panel. Explains motivations behind the project, datasets used,
+  # discussion of final results, and contact information.
+
   tabPanel(
     "About",
     titlePanel("About This Project"),
@@ -334,6 +356,13 @@ ui <- navbarPage(
                    its data sources, please visit this",
       a("link.", href = "https://collegescorecard.ed.gov/data/")
     ),
+    h3("Conclusion/Discussion of Results"),
+    p("Having performed linear regressions and graphed multiple relationships between varying college characteristics and share of inventors at each college,
+    the overarching conclusion is that no single characteristic has a statistically significant impact on the percentage of students that
+    go on to become inventors. However, this preliminary analysis does show some clearly intuitive and nonintuitive results that merit further
+    exploration. A key next step would be to run similar regressions, while controlling for confounding factors that might have influenced the
+    results. I am hopeful that this project will help better inform prospective students on which colleges will give them the best bang for their
+    buck, with bang measured as the amount of innovation and building that they will be exposed to or educated in during their 4 years."),
     h3("About Me"),
     p(
       "My name is Michael Chen and I'm a current sophomore at Harvard studying Applied Math and 
@@ -349,12 +378,14 @@ ui <- navbarPage(
   )
 )
 
-# Define server logic required to draw a histogram
+# Define server logic required to complete the project successfully
+
 server <- function(input, output) {
+
   # Send a pre-rendered image, and don't delete the image after sending it
+
   output$plot1 <- renderImage(
     {
-      # When input$n is 3, filename is ./images/image3.jpeg
       filename <- normalizePath(file.path("Reg_Adm_Rates_Inventors.png"))
 
       # Return a list containing the filename and alt text
@@ -362,6 +393,9 @@ server <- function(input, output) {
     },
     deleteFile = FALSE
   )
+
+  # Create the first model by using the lm() function on the dataset that was
+  # read in. Then, create a regression table and the r squared table output.
 
   model_1 <- lm(inventor ~ adm_rate, data = collegePatents)
   model_table_1 <- get_regression_table(model_1)
@@ -375,9 +409,10 @@ server <- function(input, output) {
 
   output$model_table_1_2 <- renderTable(model_1_glance)
 
+  # Send a pre-rendered image, and don't delete the image after sending it
+
   output$plot2 <- renderImage(
     {
-      # When input$n is 3, filename is ./images/image3.jpeg
       filename <- normalizePath(file.path("Reg_1st_Gen_Inventors.png"))
 
       # Return a list containing the filename and alt text
@@ -385,6 +420,9 @@ server <- function(input, output) {
     },
     deleteFile = FALSE
   )
+
+  # Create the second model by using the lm() function on the dataset that was
+  # read in. Then, create a regression table and the r squared table output.
 
   model_2 <- lm(inventor ~ first_gen, data = collegePatents)
   model_table_2 <- get_regression_table(model_2)
@@ -398,9 +436,10 @@ server <- function(input, output) {
 
   output$model_table_2_2 <- renderTable(model_2_glance)
 
+  # Send a pre-rendered image, and don't delete the image after sending it
+
   output$plot3 <- renderImage(
     {
-      # When input$n is 3, filename is ./images/image3.jpeg
       filename <- normalizePath(file.path("Reg_Perc_Faculty_Inventors.png"))
 
       # Return a list containing the filename and alt text
@@ -409,7 +448,8 @@ server <- function(input, output) {
     deleteFile = FALSE
   )
 
-  # create regression table for the 3rd graph
+  # Create the third model by using the lm() function on the dataset that was
+  # read in. Then, create a regression table and the r squared table output.
 
   model_3 <- lm(inventor ~ pftfac, data = collegePatents)
   model_table_3 <- get_regression_table(model_3)
@@ -423,9 +463,10 @@ server <- function(input, output) {
 
   output$model_table_3_2 <- renderTable(model_3_glance)
 
+  # Send a pre-rendered image, and don't delete the image after sending it
+
   output$plot4 <- renderImage(
     {
-      # When input$n is 3, filename is ./images/image3.jpeg
       filename <- normalizePath(file.path("Races.png"))
 
       # Return a list containing the filename and alt text
@@ -434,9 +475,10 @@ server <- function(input, output) {
     deleteFile = FALSE
   )
 
+  # Send a pre-rendered image, and don't delete the image after sending it
+
   output$plot5 <- renderImage(
     {
-      # When input$n is 3, filename is ./images/image3.jpeg
       filename <- normalizePath(file.path("Gender.png"))
 
       # Return a list containing the filename and alt text
@@ -445,9 +487,10 @@ server <- function(input, output) {
     deleteFile = FALSE
   )
 
+  # Send a pre-rendered image, and don't delete the image after sending it
+
   output$plot6 <- renderImage(
     {
-      # When input$n is 3, filename is ./images/image3.jpeg
       filename <- normalizePath(file.path("SATScores.png"))
 
       # Return a list containing the filename and alt text
@@ -456,9 +499,10 @@ server <- function(input, output) {
     deleteFile = FALSE
   )
 
+  # Send a pre-rendered image, and don't delete the image after sending it
+
   output$plot7 <- renderImage(
     {
-      # When input$n is 3, filename is ./images/image3.jpeg
       filename <- normalizePath(file.path("ACTScores.png"))
 
       # Return a list containing the filename and alt text
@@ -466,6 +510,9 @@ server <- function(input, output) {
     },
     deleteFile = FALSE
   )
+
+  # Loop through the potential user choices and create the appropriate
+  # scatterplot, substituting in the user input for the x variable
 
   output$inventorschart <- renderPlot({
     # create the graph
@@ -476,6 +523,9 @@ server <- function(input, output) {
       geom_smooth(method = "lm", se = TRUE, color = "black")
   })
 
+  # Loop through the potential user choices and create the appropriate
+  # scatterplot, substituting in the user input for the x variable
+
   output$patentschart <- renderPlot({
 
     # create the graph
@@ -485,7 +535,10 @@ server <- function(input, output) {
       geom_smooth(method = "lm", se = TRUE, color = "black")
   })
 
-  output$citeschart <- renderPlot({
+  # Loop through the potential user choices and create the appropriate
+  # scatterplot, substituting in the user input for the x variable
+
+   output$citeschart <- renderPlot({
 
     # create the graph
     ggplot(collegePatents %>% drop_na(input$variable), aes(x = get(input$variable2), y = total_cites)) +
