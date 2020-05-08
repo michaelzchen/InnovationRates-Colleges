@@ -105,3 +105,55 @@ ggplot(final, aes(x = as.numeric(pftfac), inventor, color = inventor)) +
 
 ggsave("Inventors-College/Reg_Perc_Faculty_Inventors.png")
 ```
+
+```{r race/ethnicity}
+cols <- c("White" = "Blue", "Asian" = "Red", "Hispanic" = "Green", "Black" = "Black")
+ggplot(final) +
+  geom_smooth(data = final, aes(x = as.numeric(ugds_white), y = inventor, color = "White"), fill = "Blue") +
+  geom_smooth(data = final, aes(x = as.numeric(ugds_asian), y = inventor, color = "Asian"), fill = "Red") +
+  geom_smooth(data = final, aes(x = as.numeric(ugds_hisp), y = inventor, color = "Hispanic"), fill = "green") +
+  geom_smooth(data = final, aes(x = as.numeric(ugds_black), y = inventor, color = "Black"), fill = "black") +
+  labs(title = "Comparing Different Races Against Inventor", x = "Percent Demographic", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_color_manual(name = "Race", values = cols)
+
+ggsave("Inventors-College/Races.png")
+
+cols1 <- c("Men" = "Blue", "Women" = "Red")
+ggplot(final) +
+  geom_smooth(data = final, aes(x = as.numeric(ugds_men), y = inventor, color = "Men"), fill = "Blue") +
+  geom_smooth(data = final, aes(x = as.numeric(ugds_women), y = inventor, color = "Women"), fill = "Red") +
+  labs(title = "Comparing Different Genders Against Inventor", x = "Percent Gender", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_color_manual(name = "Gender", values = cols1)
+
+ggsave("Inventors-College/Gender.png")
+
+cols2 <- c("Verbal" = "Blue", "Math" = "Red", "Writing" = "Black")
+ggplot(final) +
+  geom_smooth(data = final, aes(x = as.numeric(satvrmid), y = inventor, color = "Verbal"), fill = "Blue") +
+  geom_smooth(data = final, aes(x = as.numeric(satmtmid), y = inventor, color = "Math"), fill = "Red") +
+  geom_smooth(data = final, aes(x = as.numeric(satwrmid), y = inventor, color = "Writing"), fill = "Black") +
+  labs(title = "Comparing Different SAT Subject Scores Against Inventor", x = "SAT Average Score", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_manual(name = "SAT Subject", values = cols2)
+
+ggsave("Inventors-College/SATScores.png")
+
+cols3 <- c("Cumulative" = "Blue", "English" = "Red", "Math" = "Black")
+ggplot(final) +
+  geom_smooth(data = final, aes(x = as.numeric(actcmmid), y = inventor, color = "Cumulative"), fill = "Blue") +
+  geom_smooth(data = final, aes(x = as.numeric(actenmid), y = inventor, color = "English"), fill = "Red") +
+  geom_smooth(data = final, aes(x = as.numeric(actmtmid), y = inventor, color = "Math"), fill = "Black") +
+  labs(title = "Comparing Different ACT Subject Scores Against Inventor", x = "ACT Average Score", y = "Percentage of Students That Are Inventors") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_manual(name = "ACT Subject", values = cols3)
+
+ggsave("Inventors-College/ACTScores.png")
+```
+
+```{r}
+
+```
