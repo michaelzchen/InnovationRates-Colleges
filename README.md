@@ -1,6 +1,6 @@
 # Project Summary
 
-This project will be a data analaysis on what college characteristics result in higher (or lower) patent rates, and what our higher education system can do moving forward to increase innovation rates and opportunities. Past research has focused mainly on average earnings of graduates in their first year out of college as a proxy for whether college is "worth" the cost or not, but this project instead uses patent rates as a proxy for whether college is "worth" the cost or not.
+This project will be a data analysis on what college characteristics result in higher (or lower) patent rates, and what our higher education system can do moving forward to increase innovation rates and opportunities. Past research has focused mainly on average earnings of graduates in their first year out of college as a proxy for whether college is "worth" the cost or not, but this project instead uses patent rates as a proxy for whether college is "worth" the cost or not.
 
 # Data Sources
 
